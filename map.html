@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Directions Service</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <style type="text/css">
+     
+      #map {
+        height: 100%;
+      }
+
+      
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        border-radius: 20px;
+        text-align: center;
+        font-family: "Roboto", "sans-serif";
+        line-height: 30px;
+        padding-left: 10px;
+      }
+    </style>
+    <script>
+      function initMap() {
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer();
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 20,
+          center: { lat: 10.84403656725309, lng:  106.79494702063728 },
+        });
+
+        const contentStringUTC2 = 
+        '<h3>Phân hiệu Trường Đại học Giao thông Vận tải tại TP. Hồ Chí Minh </h3>' +
+        '<p> Được thành lập theo quyết định số 2419/QĐ-BGDĐT ngày 15 tháng 07 năm 2016 </p> '+
+        '<p> của Bộ trưởng Bộ Giáo dục và Đào tạo trên nền tảng Cơ sở II </p> '+
+        '<p> (được thành lập theo Quyết định số 139/TCCB ngày 27/04/1990 của Bộ Giáo dục và Đào tạo). <p> '+
+        '<p> Phân hiệu là một bộ phận cấu thành quan trọng của Trường Đại học Giao thông Vận tải </p> '+
+        '<p> trực thuộc Bộ Giáo dục và Đào tạo. Trường tọa lạc trên diện tích hơn 16ha tại </p> '+
+        '<p> Quận 9, Thành phố Hồ Chí Minh, quy mô đào tạo trên 7000 sinh viên và học viên các hệ. </p> ';
+
+        const contentStringMyPlace = 
+        '<h3>Tên: Nguyễn Hoàng Long</h3>'
+        + '<p>Tuổi: 20 </p>'
+        + '<p>Giới tính: Nam</p>'
+        + '<p>MSSV: 5951071052 </p>'
+        + '<p>Ngày sinh: 08/10/2000</p>'
+        + '<p>Quê quán: Bình Định </p>'
+        + '<p>Email: nhl0gm@gmail.com </p>';
+
+        const infoUTC2 = new google.maps.InfoWindow({
+            content: contentStringUTC2,
+        });
+        
+        const infoMyPlace = new google.maps.InfoWindow({
+            content: contentStringMyPlace,
+        });
+
+        var markerMyPlace = new google.maps.Marker({
+        position: new google.maps.LatLng(10.844042763446748, 106.79496340945535),
+        map: map,
+        icon: './myavt.jpg'
+        });
+        markerMyPlace.addListener("click", () => {
+            infoMyPlace.open(map, markerMyPlace);
+        })
+
+        var markerUTC2 = new google.maps.Marker({
+        position: new google.maps.LatLng(10.845813, 106.794545),
+        map: map,
+        icon: './utc2.png'
+        });
+        markerUTC2.addListener("click", () => {
+            infoUTC2.open(map, markerUTC2);
+        })
+        
+
+        directionsRenderer.setMap(map);
+
+        const onChangeHandler = function () {
+          calculateAndDisplayRoute(directionsService, directionsRenderer);
+        };
+        document
+          .getElementById("start")
+          .addEventListener("change", onChangeHandler);
+        document
+          .getElementById("end")
+          .addEventListener("change", onChangeHandler);
+      }
+
+      function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+        directionsService.route(
+          {
+            origin: {
+              query: document.getElementById("start").value,
+            },
+            destination: {
+              query: document.getElementById("end").value,
+            },
+            travelMode: google.maps.TravelMode.WALKING,
+          },
+          (response, status) => {
+            if (status === "OK") {
+              directionsRenderer.setDirections(response);
+            } else {
+              window.alert("Directions request failed due to " + status);
+            }
+          }
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <div id="floating-panel">
+      <b>Start: </b>
+      <select id="start">
+        <option value="Ký túc xá Đại học GTVT CS 2">My Place</option>
+        <option value="PHÂN HIỆU TRƯỜNG ĐH GTVT TẠI TP. HỒ CHÍ MINH">My School</option>
+        <option value="Trường Đại học Kiến Trúc Thành phố Hồ Chí Minh">UAH</option>
+        <option value="Saigon University">Saigon University</option>       
+        <option value="Ho Chi Minh City University of Natural Resources and Environment">HCMUNRE</option>
+      </select>
+      <b>End: </b>
+      <select id="end">
+        <option value="Ký túc xá Đại học GTVT CS 2">My Place</option>  
+        <option value="PHÂN HIỆU TRƯỜNG ĐH GTVT TẠI TP. HỒ CHÍ MINH">My School</option>  
+        <option value="Trường Đại học Kiến Trúc Thành phố Hồ Chí Minh">UAH</option>
+        <option value="Saigon University">Saigon University</option>   
+        <option value="Ho Chi Minh City University of Natural Resources and Environment">HCMUNRE</option>             
+      </select>
+    </div>
+    <div id="map"></div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBIwzALxUPNbatRBj3Xi1Uhp0fFzwWNBkE&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
+  </body>
+</html>
